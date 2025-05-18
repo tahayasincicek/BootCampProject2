@@ -1,9 +1,12 @@
 using Business.Managers;
 using Business.Services;
+using Microsoft.EntityFrameworkCore;
 using Repositories.Context;
 using Repositories.Interfaces;
 using Repositories.Repositories;
-using Microsoft.EntityFrameworkCore;
+using WebApplication1.Middlewares;
+using Business.Rules;
+using Business.Profiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,7 +29,15 @@ builder.Services.AddScoped<IApplicationService, ApplicationManager>();
 builder.Services.AddScoped<IBootcampService, BootcampManager>();
 builder.Services.AddScoped<IBlacklistService, BlacklistManager>();
 
+// Register business rules
+builder.Services.AddScoped<ApplicationBusinessRules>();
+builder.Services.AddScoped<ApplicantBusinessRules>();
+builder.Services.AddScoped<BootcampBusinessRules>();
+builder.Services.AddScoped<BlacklistBusinessRules>();
+
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionMiddleware>(); 
 
 app.UseSwagger();
 app.UseSwaggerUI();
@@ -34,4 +45,4 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
-app.Run();
+app.Run(); 
